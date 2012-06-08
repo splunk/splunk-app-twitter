@@ -1,0 +1,47 @@
+<?xml version='1.0' encoding='utf-8'?>
+<form>
+  <label>Twitter Per-User Activity</label>
+  <fieldset>
+    <input type="text" token="userToken">
+      <label>@user</label>
+      <default>*</default>
+      <seed>justinbieber</seed>
+    </input>
+    <input type="text" token="hashtagToken">
+      <label>#hashtag</label>
+      <default>*</default>
+      <seed>ThingsThatBotherMe</seed>
+    </input>
+    <input type="time">
+      <default>Last 15 minutes</default>
+    </input>
+  </fieldset>
+  <row>
+    <table>
+      <searchTemplate>index=twitter $userToken$ | rename entities.user_mentions{}.screen_name as mentions | mvexpand mentions | search mentions=$userToken$ | search NOT retweeted_status.user.screen_name=$userToken$ | search NOT in_reply_to_screen_name=$userToken$ | stats sum(user.followers_count) as Impressions max(user.followers_count) as Followers count as Tweets values(text) as "Tweet Text" by user.screen_name | sort 20 -Impressions</searchTemplate>
+      <title>Users Tweeting about @user (Without Direct RTs or Direct Replies)</title>
+      <option name="count">10</option>
+      <option name="displayRowNumbers">true</option>
+    </table>
+  </row>
+  <row>
+    <table>
+      <searchTemplate>index=twitter $userToken$ | rename entities.user_mentions{}.screen_name as mentions | mvexpand mentions | search mentions=$userToken$ | search in_reply_to_screen_name=$userToken$ | stats sum(user.followers_count) as Impressions max(user.followers_count) as Followers count as Tweets values(text) as "Tweet Text" by user.screen_name | sort 20 -Impressions</searchTemplate>
+      <title>Users Replying to @user</title>
+    </table>
+  </row>
+  <row>
+    <table>
+      <searchTemplate>index=twitter retweeted_status.user.screen_name=$userToken$ | stats sum(user.followers_count) as Impressions max(user.followers_count) as Followers count as Tweets values(text) as "Tweet Text" by user.screen_name | sort 20 -Impressions</searchTemplate>
+      <title>Users Retweeting @user</title>
+      <option name="count">10</option>
+      <option name="displayRowNumbers">true</option>
+    </table>
+  </row>
+  <row>
+    <table>
+      <searchTemplate>index=twitter $hashtagToken$ | rename entities.hashtags{}.text as hashtags | mvexpand hashtags | search hashtags=$hashtagToken$ | stats sum(user.followers_count) as Impressions max(user.followers_count) as Followers count as Tweets values(text) as "Tweet Text" by user.screen_name | sort 20 -Impressions</searchTemplate>
+      <title>Users Tweeting about #hashtag</title>
+    </table>
+  </row>
+</form>

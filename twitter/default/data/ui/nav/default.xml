@@ -1,0 +1,9 @@
+<nav>
+    <view name="flashtimeline" default='true' />
+    <collection label="Views">
+        <view source="unclassified" />
+    </collection>
+    <collection label="Searches &amp; Reports">
+        <saved source="unclassified" />
+    </collection>
+</nav>

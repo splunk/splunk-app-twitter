@@ -1,0 +1,80 @@
+<?xml version='1.0' encoding='utf-8'?>
+<dashboard>
+  <label>Twitter General Activity</label>
+  <row>
+    <chart>
+      <searchName>Top Hashtags</searchName>
+      <title>Top Hashtags - Last 15 minutes</title>
+      <option name="charting.chart">bar</option>
+      <option name="charting.chart.nullValueMode">gaps</option>
+      <option name="charting.chart.stackMode">default</option>
+      <option name="charting.layout.splitSeries">false</option>
+      <option name="charting.legend.placement">right</option>
+      <option name="charting.secondaryAxis.maximumNumber">""</option>
+      <option name="charting.secondaryAxis.minimumNumber">""</option>
+      <option name="charting.secondaryAxis.scale">""</option>
+      <option name="count">50</option>
+      <option name="displayRowNumbers">true</option>
+    </chart>
+    <chart>
+      <searchName>Top Mentions</searchName>
+      <title>Top Mentions - Last 15 minutes</title>
+      <option name="charting.chart">bar</option>
+      <option name="charting.chart.nullValueMode">gaps</option>
+      <option name="charting.chart.stackMode">default</option>
+      <option name="charting.layout.splitSeries">false</option>
+      <option name="charting.legend.placement">right</option>
+      <option name="charting.secondaryAxis.maximumNumber">""</option>
+      <option name="charting.secondaryAxis.minimumNumber">""</option>
+      <option name="charting.secondaryAxis.scale">""</option>
+      <option name="count">50</option>
+      <option name="displayRowNumbers">true</option>
+    </chart>
+  </row>
+  <row>
+    <chart>
+      <searchName>Tweet Time Zones</searchName>
+      <title>Tweet Time Zones - Last 15 minutes</title>
+      <option name="charting.axisTitleX.text">Time Zone (GMT Offset)</option>
+      <option name="charting.chart">column</option>
+      <option name="charting.chart.nullValueMode">gaps</option>
+      <option name="charting.chart.stackMode">default</option>
+      <option name="charting.layout.splitSeries">false</option>
+      <option name="charting.legend.placement">right</option>
+      <option name="charting.primaryAxisTitle.text"></option>
+      <option name="charting.secondaryAxis.maximumNumber">""</option>
+      <option name="charting.secondaryAxis.minimumNumber">""</option>
+      <option name="charting.secondaryAxis.scale">""</option>
+      <option name="count">50</option>
+      <option name="displayRowNumbers">true</option>
+    </chart>
+    <chart>
+      <searchName>Top User Agents</searchName>
+      <title>Top User Agents - Last 24 hours</title>
+      <option name="charting.chart">pie</option>
+      <option name="charting.chart.nullValueMode">gaps</option>
+      <option name="charting.chart.stackMode">default</option>
+      <option name="charting.layout.splitSeries">false</option>
+      <option name="charting.legend.placement">right</option>
+      <option name="charting.secondaryAxis.maximumNumber">""</option>
+      <option name="charting.secondaryAxis.minimumNumber">""</option>
+      <option name="charting.secondaryAxis.scale">""</option>
+      <option name="count">50</option>
+      <option name="displayRowNumbers">true</option>
+    </chart>
+  </row>
+  <row>
+    <table>
+      <searchName>Tweet Stream</searchName>
+      <title>Tweet Stream (All Users) - Last 30 seconds</title>
+      <option name="count">10</option>
+      <option name="displayRowNumbers">true</option>
+    </table>
+    <table>
+      <searchName>Tweet Stream for First-Time Users</searchName>
+      <title>Tweet Stream (First Time Users) - Last minute</title>
+      <option name="count">10</option>
+      <option name="displayRowNumbers">true</option>
+    </table>
+  </row>
+</dashboard>

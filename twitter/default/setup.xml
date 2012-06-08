@@ -1,0 +1,40 @@
+<setup>
+    <block title="Welcome to the Twitter App">
+        <text><![CDATA[
+To start indexing Twitter's sample stream please:<br/>
+<strong>
+1. Provide Twitter credentials below.<br/>
+2. Enable the Twitter scripted input below.<br/>
+</strong>
+        ]]></text>
+    </block>
+    
+    <block title="Edit Twitter Account Info" endpoint="admin/passwords" eai_strict="false" entity="*">
+        <input field="password">
+            <label>Change password for user: $username$</label>
+            <type>password</type>
+        </input>
+    </block>
+    
+    <block title="Enable Twitter scripted input" endpoint="data/inputs/script" entity=".%252Fbin%252Ftwitter_stream.py">
+        <input field="interval">
+            <label>Restart Interval (sec)</label>
+            <type>text</type>
+        </input>
+        <input field="enabled">
+            <label>Enable</label>
+            <type>bool</type>
+        </input>
+    </block>
+    
+    <block title="Add Twitter Account Info" endpoint="admin/passwords" entity="_new">
+        <input field="name">
+            <label>Username</label>
+            <type>text</type>
+        </input>
+        <input field="password">
+            <label>Password</label>
+            <type>password</type>
+        </input>
+    </block>
+</setup>
