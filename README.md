@@ -12,15 +12,11 @@ A number of dashboards and searches are also included to demonstrate how Splunk 
 
 * In the Splunk web interface, from the App menu, select the Twitter app. And press "Continue to app setup page".
 
-* Enter your Twitter credentials and click "Save".
-  
-  * If you don't already have a Twitter account, you can sign up for one at [https://twitter.com/](https://twitter.com/).
+* Enter your Twitter credentials and click "Save". (If you don't already have a Twitter account, you can sign up for one at [https://twitter.com/](https://twitter.com/).)
 
 * Wait 15 seconds or so for some tweets to be extracted.
 
-* Run a test search `index=twitter` to see the events.
-
-  * If you don't see any events, open `$SPLUNK_HOME/var/log/splunk/splunkd.log` and look for errors issued by ExecProcessor related to the `$SPLUNK_HOME/etc/apps/twitter/bin/twitter_stream.py` script.
+* Run the search `index=twitter` in Splunk to see the events. If you don't see any events, open `$SPLUNK_HOME/var/log/splunk/splunkd.log` and look for errors issued by ExecProcessor related to the `$SPLUNK_HOME/etc/apps/twitter/bin/twitter_stream.py` script.
 
 ## Dashboards and Searches
 

@@ -14,6 +14,15 @@
 # License for the specific language governing permissions and limitations 
 # under the License.
 
+"""
+Scripted input that streams data from Twitter's 1% sample feed to standard
+output, with each event on a separate line in JSON format.
+
+The original JSON from Twitter is augmented with an extra '__time' key on each
+event. This makes it possible for Splunk to use a regex to parse out the
+timestamp accurately.
+"""
+
 import http_stream
 import json
 import splunk.entity as entity
@@ -65,6 +74,14 @@ def write_twitter_line(line):
 
 
 def get_credentials(session_key):
+    """
+    Reads the user's Twitter credentials from the `admin/passwords` endpoint
+    on the Splunk server.
+    
+    These credentials are entered by the user on the setup page for this app,
+    which is defined by `setup.xml`.
+    """
+    
     # Read credentials from splunk configuration
     try:
         entities = entity.getEntities(['admin', 'passwords'],
@@ -100,4 +117,5 @@ def main():
         out_stream=LineBufferedOutputStream(write_twitter_line))
 
 
-main()
+if __name__ == '__main__':
+    main()

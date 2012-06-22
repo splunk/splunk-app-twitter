@@ -14,6 +14,15 @@
 # License for the specific language governing permissions and limitations 
 # under the License.
 
+"""
+Connects to an HTTP or HTTPS URL and streams its content to standard output
+or to a user-provided output stream.
+
+This script can be used as a standalone command-line program or imported as a
+module and invoked directly via either the `start` method or the
+`read_http_stream` method.
+"""
+
 import base64
 from getpass import getpass
 import httplib
@@ -33,33 +42,37 @@ MAX_TRIES = 100
 def retry(ExceptionToCheck, tries=10, delay=3, backoff=2):
     """
     Retry decorator with exponential backoff.
-    Retries a function or method until it returns True.
+    Retries a function or method until it does not throw the specified exception type.
+    Returns `None` if the maximum number of retries is exceeded.
     
     Original: http://wiki.python.org/moin/PythonDecoratorLibrary#Retry
     """
     def deco_retry(f):
         def f_retry(*args, **kwargs):
             mtries, mdelay = tries, delay
-            try_one_last_time = True
-            while mtries > 1:
+            while mtries > 0:
                 try:
                     return f(*args, **kwargs)
-                    try_one_last_time = False
-                    break
                 except ExceptionToCheck, e:
-                    sys.stderr.write('%s, Retrying in %d seconds...' % (str(e), mdelay))
+                    sys.stderr.write('%s, Retrying in %d seconds...\n' % (str(e), mdelay))
+                    sys.stderr.flush()
+                    
                     time.sleep(mdelay)
+                    
                     mtries -= 1
                     mdelay *= backoff
-                    sys.stderr.flush()
-            if try_one_last_time:
-                return f(*args, **kwargs)
-            return
+                    continue
+            
+            return None
         return f_retry  # true decorator
     return deco_retry
 
 
-class StreamingHttp:
+class AuthenticatedHttpConnection:
+    """
+    Represents a connection to an HTTP(S) URL that requires authentication.
+    """
+    
     def __init__(self, username, password, host, path, use_https):
         self.username = username
         self.password = password
@@ -67,7 +80,6 @@ class StreamingHttp:
         self.path = path
         self.use_https = use_https
         
-        self.buffer = ''
         self.connection = None
 
     def connect(self, check_response=True):
@@ -78,7 +90,7 @@ class StreamingHttp:
             'Content-Length': '0',
             'Authorization': token,
             'Host': self.host,
-            'User-Agent': 'splunk_streaming_http.py/0.1',
+            'User-Agent': 'http_stream.py/0.1',
             'Accept': '*/*',
             'Accept-Encoding': '*,gzip'
         }
@@ -99,7 +111,7 @@ class StreamingHttp:
         self.connection.close()
 
 
-def cmdline():
+def parse_arguments(args):
     parser = optparse.OptionParser()
     parser.add_option('', '--https', action='store_true', dest='use_https')
     parser.add_option('-u', '--username', action='store', type='string', dest='username')
@@ -107,7 +119,7 @@ def cmdline():
     parser.add_option('', '--host', action='store', type='string', dest='host')
     parser.add_option('', '--path', action='store', type='string', dest='path')
     parser.add_option('', '--chunk', action='store', type='int', dest='chunk', default=10 * 1024)
-    (opts, args) = parser.parse_args(sys.argv[1:])
+    (opts, args) = parser.parse_args(args)
     
     kwargs = vars(opts)
     
@@ -124,12 +136,34 @@ def cmdline():
     return kwargs
 
 
-def listen(username, password, host, path, use_https, chunk_size, out_stream=None):
+def read_http_stream(username, password, host, path, use_https, chunk_size=None, out_stream=None):
+    """
+    Continuously reads from the specified HTTP(S) URL and writes its contents to
+    the specified output stream (or `sys.stdout` if no stream is provided).
+    
+    Never returns, unless an I/O error occurs.
+    
+    :param username:    the username to authenticate with.
+    :param password:    the password to authenticate with.
+    :param host:        the hostname to connect to.
+    :param path:        the path to request on the HTTP server.
+    :param use_https:   whether to use HTTP (`False`) HTTPS or (`True`).
+    :param chunk_size:  (optional) size of the internal buffer that data will
+                        be downloaded to.
+    :param out_stream:  (optional) a file-like object that data will be written to.
+                        Must support a `write` method. Defaults to `sys.stdout`.
+    :raises Exception:  if no data can be read from the URL after a sufficent
+                        number of tries.
+    """
+    
+    if chunk_size is None:
+        chunk_size = 102400
     if out_stream is None:
         out_stream = sys.stdout
     
-    streaming_http = StreamingHttp(username, password, host, path, use_https)
-    stream = streaming_http.connect()
+    connection = AuthenticatedHttpConnection(
+        username, password, host, path, use_https)
+    stream = connection.connect()
     
     is_gzip = False
     if stream.getheader('content-encoding', '') == 'gzip':
@@ -138,16 +172,13 @@ def listen(username, password, host, path, use_https, chunk_size, out_stream=Non
     zlib_mode = 16 + zlib.MAX_WBITS
     decompressor = zlib.decompressobj(zlib_mode)
 
-    buffer = ''
     tries = 0
-
-    while True and tries < MAX_TRIES:
+    while tries < MAX_TRIES:
         # Read a chunk
         data = stream.read(chunk_size)
         
         if is_gzip:
             decompressed_data = decompressor.decompress(data)
-            decompressed_data += decompressor.decompress(bytes())
             buffer = decompressed_data
         else:
             buffer = data
@@ -159,33 +190,37 @@ def listen(username, password, host, path, use_https, chunk_size, out_stream=Non
             tries += 1
         elif len(buffer) > 0:
             tries = 0
-        
-        buffer = ''
-        
-    if tries == MAX_TRIES:
-        stream.close()
-        raise Exception('Reached maximum read attempts')
+    
+    stream.close()
+    raise Exception('Reached maximum read attempts.')
 
 
-# We encode all the logic for starting up the HTTP connection, 
-# together with the actual processing
-# logic into one function. This allows us to decorate it with
-# the ability to keep retrying if an exception happens, using
-# exponential backoff.
 @retry(Exception)
-def start(username, password, host, path, use_https, chunk_size, out_stream=None):
+def start(username, password, host, path, use_https, chunk_size=None, out_stream=None):
+    """
+    Continuously reads from the specified HTTP(S) URL and writes its contents to
+    the specified output stream (or `sys.stdout` if no stream is provided).
+    
+    If a connection cannot be established initially, exponential backoff will be
+    used to retry.
+    
+    Never returns, unless multiple attempts to read from the URL have failed.
+    
+    .. seealso:: :py:func:`read_http_stream`
+    """
+    
     try: 
-        listen(username, password, host, path, use_https, chunk_size, out_stream)
+        read_http_stream(username, password, host, path, use_https, chunk_size, out_stream)
     except KeyboardInterrupt:
         pass
     except Exception as e:
         traceback.print_exc(file=sys.stderr)
         sys.stderr.flush()
-        raise Exception()
+        raise e
 
 
 def main():
-    kwargs = cmdline()
+    kwargs = parse_arguments(sys.argv[1:])
     
     start(
         username=kwargs['username'],
