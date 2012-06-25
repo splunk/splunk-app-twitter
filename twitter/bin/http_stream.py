@@ -213,10 +213,10 @@ def start(username, password, host, path, use_https, chunk_size=None, out_stream
         read_http_stream(username, password, host, path, use_https, chunk_size, out_stream)
     except KeyboardInterrupt:
         pass
-    except Exception as e:
+    except Exception:
         traceback.print_exc(file=sys.stderr)
         sys.stderr.flush()
-        raise e
+        raise
 
 
 def main():
