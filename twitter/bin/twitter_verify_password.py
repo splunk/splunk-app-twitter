@@ -24,26 +24,32 @@ at the time the credentials are entered.
 """
 
 from http_stream import AuthenticatedHttpConnection
+import optparse
 import sys
 
+
+def parse_arguments(args):
+    parser = optparse.OptionParser()
+    parser.add_option('', '--username', action='store', type='string', dest='username')
+    parser.add_option('', '--password', action='store', type='string', dest='password')
+    parser.add_option('', '--realm', action='store', type='string', dest='IGNORED')
+    (opts, args) = parser.parse_args(args)
+    return vars(opts)
+
+
 def main():
-    username = None
-    password = None
-    
     # Read args passed by splunkd. They look like:
     #   --<arg-name>=<arg-value>
+    args = []
     while True:
         line = sys.stdin.readline().strip()
         if len(line) == 0:
             break
-        if line.startswith('--'):
-            kv = line[2:].split('=', 1)
-            if len(kv) == 2:
-                if kv[0] == 'username':
-                    username = kv[1]
-                elif kv[0] == 'password':
-                    password = kv[1]
+        args.append(line)
     
+    kwargs = parse_arguments(args)
+    username = kwargs.get('username', None)
+    password = kwargs.get('password', None)
     if username is None or password is None:
         raise Exception('Username or password argument not specified.')
     
