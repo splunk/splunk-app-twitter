@@ -25,7 +25,8 @@ timestamp accurately.
 
 import http_stream
 import json
-import splunk.entity as entity
+import splunk
+import splunklib.client
 import sys
 
 
@@ -82,17 +83,20 @@ def get_credentials(session_key):
     which is defined by `setup.xml`.
     """
     
-    # Read credentials from splunk configuration
-    try:
-        entities = entity.getEntities(['admin', 'passwords'],
-            namespace='twitter', owner='nobody', sessionKey=session_key)
-    except Exception, e:
-        sys.stderr.write('Could not get Twitter credentials from splunk. Error: %s\n' % e)
-        exit(1)
+    # NOTE: Requires 'develop' version of splunklib past 0.8.0
+    #       for 'token' parameter to be honored.
+    service = splunklib.client.Service(
+        host=splunk.getDefault('host'),
+        port=splunk.getDefault('port'),
+        scheme=splunk.getDefault('protocol'),
+        owner='nobody',
+        app='twitter',
+        token='Splunk %s' % session_key)
     
     # Return first set of credentials
-    for i, c in entities.items():
-        return c['username'], c['clear_password']
+    passwords = splunklib.client.Collection(service, 'admin/passwords')
+    for password in passwords:
+        return password['username'], password['clear_password']
     
     sys.stderr.write('Could not get Twitter credentials from splunk. Error: No credentials supplied, please complete the Twitter app setup\n')
     exit(1)
