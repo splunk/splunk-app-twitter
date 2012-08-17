@@ -90,7 +90,7 @@ def get_credentials(session_key):
         port=splunk.getDefault('port'),
         scheme=splunk.getDefault('protocol'),
         owner='nobody',
-        app='twitter',
+        app='twitter2',
         token='Splunk %s' % session_key)
     
     # Return first set of credentials
