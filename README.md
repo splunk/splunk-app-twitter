@@ -10,8 +10,8 @@ can be used to visualize Twitter activity.
 
 ## Installation
 
-* Install the app by copying the `twitter` directory to
-  `$SPLUNK_HOME/etc/apps/twitter`.
+* Install the app by copying the `twitter2` directory to
+  `$SPLUNK_HOME/etc/apps/twitter2`.
 
 * (Re)start Splunk so that the app is recognized.
 
@@ -27,7 +27,7 @@ can be used to visualize Twitter activity.
 * Run the search `index=twitter` in Splunk to see the events. If you don't see
   any events, open `$SPLUNK_HOME/var/log/splunk/splunkd.log` and look for errors
   issued by ExecProcessor related to the
-  `$SPLUNK_HOME/etc/apps/twitter/bin/twitter_stream.py` script.
+  `$SPLUNK_HOME/etc/apps/twitter2/bin/twitter_stream.py` script.
 
 ## Dashboards and Searches
 
