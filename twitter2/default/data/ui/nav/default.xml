@@ -1,9 +1,19 @@
 <nav>
-    <view name="flashtimeline" default='true' />
-    <collection label="Views">
-        <view source="unclassified" />
+    <view name="twitter_general" default='true' />
+    <collection label="Dashboards">
+        <view name="twitter_general" />
+        <view name="twitter_drilldown" />
     </collection>
-    <collection label="Searches &amp; Reports">
-        <saved source="unclassified" />
+    <collection label="Searches">
+        <saved name="Top Hashtags" />
+        <saved name="Top Mentions" />
+        <saved name="Top User Agents" />
+        <saved name="Top Users" />
+        <divider />
+        <saved name="Tweet Stream" />
+        <saved name="Tweet Stream for First-Time Users" />
+        <saved name="Tweet Time Zones" />
+        <divider />
+        <saved name="Tweet Locations" />
     </collection>
 </nav>
