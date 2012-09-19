@@ -19,7 +19,8 @@ If you wish to run the "Tweet Locations" search, you will need to install the
         </input>
     </block>
     
-    <block title="Enable Twitter scripted input (OS X, Linux)" endpoint="data/inputs/script" entity=".%252Fbin%252Ftwitter_stream.py">
+    <!-- (OS X, Linux) -->
+    <block title="Enable Twitter scripted input" enabled="in-unix" endpoint="data/inputs/script" entity=".%252Fbin%252Ftwitter_stream.py">
         <input field="interval">
             <label>Restart Interval (sec)</label>
             <type>text</type>
@@ -30,7 +31,8 @@ If you wish to run the "Tweet Locations" search, you will need to install the
         </input>
     </block>
     
-    <block title="Enable Twitter scripted input (Windows)" endpoint="data/inputs/script" entity=".\bin\twitter_stream.py">
+    <!-- (Windows) -->
+    <block title="Enable Twitter scripted input" enabled="in-windows" endpoint="data/inputs/script" entity=".%5Cbin%5Ctwitter_stream.py">
         <input field="interval">
             <label>Restart Interval (sec)</label>
             <type>text</type>
