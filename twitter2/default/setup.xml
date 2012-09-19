@@ -6,6 +6,9 @@ To start indexing Twitter's sample stream please:<br/>
 1. Provide Twitter credentials below.<br/>
 2. Enable the Twitter scripted input below.<br/>
 </strong>
+<br/>
+If you wish to run the "Tweet Locations" search, you will need to install the
+<a href="http://splunk-base.splunk.com/apps/22365/google-maps">Google Maps</a> app.
         ]]></text>
     </block>
     
@@ -16,7 +19,18 @@ To start indexing Twitter's sample stream please:<br/>
         </input>
     </block>
     
-    <block title="Enable Twitter scripted input" endpoint="data/inputs/script" entity=".%252Fbin%252Ftwitter_stream.py">
+    <block title="Enable Twitter scripted input (OS X, Linux)" endpoint="data/inputs/script" entity=".%252Fbin%252Ftwitter_stream.py">
+        <input field="interval">
+            <label>Restart Interval (sec)</label>
+            <type>text</type>
+        </input>
+        <input field="enabled">
+            <label>Enable</label>
+            <type>bool</type>
+        </input>
+    </block>
+    
+    <block title="Enable Twitter scripted input (Windows)" endpoint="data/inputs/script" entity=".\bin\twitter_stream.py">
         <input field="interval">
             <label>Restart Interval (sec)</label>
             <type>text</type>
