@@ -1,26 +1,45 @@
 <setup>
-    <block title="Welcome to the Twitter App">
+    <block title="Welcome to the Splunk-Twitter Connector app">
         <text><![CDATA[
-To start indexing Twitter's sample stream please:<br/>
+To start indexing Twitter's sample stream please:<br/><br/>
 <strong>
-1. Provide Twitter credentials below.<br/>
-2. Enable the Twitter scripted input below.<br/>
+1. Provide OAuth settings for the Twitter application you will use for streaming.<br/>
+2. Enable Twitter scripted input.<br/>
 </strong>
 <br/>
-If you wish to run the "Tweet Locations" search, you will need to install the
-<a href="http://splunk-base.splunk.com/apps/22365/google-maps">Google Maps</a> app.
+The Twitter application you use for streaming requires read-only access. You can
+access your applications or create a new read-only application <a href="https://dev.twitter.com/apps">here</a>.
+You will need a Twitter account to create an application. You can create a new account
+<a href="https://twitter.com/account/new">here</a>.<br/><br>
+If you wish to run the Tweet Locations search, you will need to install the
+<a href="http://splunk-base.splunk.com/apps/22365/google-maps">Google Maps</a>
+app.
         ]]></text>
     </block>
-    
-    <block title="Edit Twitter Account Info" endpoint="admin/passwords" eai_strict="false" entity="*">
-        <input field="password">
-            <label>Change password for user: $username$</label>
+
+    <block title="Twitter application OAuth settings" endpoint="configs/conf-twitter-application" entity="OAuth settings">
+        <input field="app_key">
+            <label>Consumer key</label>
+            <type>text</type>
+        </input>
+        <input field="app_secret">
+            <label>Consumer secret</label>
+            <type>password</type>
+        </input>
+        <input field="oauth_token">
+            <label>Access token</label>
+            <type>text</type>
+        </input>
+        <input field="oauth_token_secret">
+            <label>Access token secret</label>
             <type>password</type>
         </input>
     </block>
-    
+
     <!-- (OS X, Linux) -->
-    <block title="Enable Twitter scripted input" enabled="in-unix" endpoint="data/inputs/script" entity=".%252Fbin%252Ftwitter_stream.py">
+    <block title="Enable Twitter scripted input" enabled="in-unix"
+           endpoint="data/inputs/script"
+           entity=".%252Fbin%252Fstream_tweets.py">
         <input field="interval">
             <label>Restart Interval (sec)</label>
             <type>text</type>
@@ -30,9 +49,10 @@ If you wish to run the "Tweet Locations" search, you will need to install the
             <type>bool</type>
         </input>
     </block>
-    
+
     <!-- (Windows) -->
-    <block title="Enable Twitter scripted input" enabled="in-windows" endpoint="data/inputs/script" entity=".%5Cbin%5Ctwitter_stream.py">
+    <block title="Enable Twitter scripted input" enabled="in-windows"
+           endpoint="data/inputs/script" entity=".%5Cbin%5Cstream_tweets.py">
         <input field="interval">
             <label>Restart Interval (sec)</label>
             <type>text</type>
@@ -42,15 +62,5 @@ If you wish to run the "Tweet Locations" search, you will need to install the
             <type>bool</type>
         </input>
     </block>
-    
-    <block title="Add Twitter Account Info" endpoint="admin/passwords" entity="_new">
-        <input field="name">
-            <label>Username</label>
-            <type>text</type>
-        </input>
-        <input field="password">
-            <label>Password</label>
-            <type>password</type>
-        </input>
-    </block>
+
 </setup>

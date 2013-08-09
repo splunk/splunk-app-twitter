@@ -23,53 +23,69 @@ credentials are deemed invalid, an error message will be presented to the user
 at the time the credentials are entered.
 """
 
-from http_stream import AuthenticatedHttpConnection
+from twython import Twython, TwythonError
 import optparse
 import sys
 
 
 def parse_arguments(args):
     parser = optparse.OptionParser()
-    parser.add_option('', '--username', action='store', type='string', dest='username')
-    parser.add_option('', '--password', action='store', type='string', dest='password')
-    parser.add_option('', '--realm', action='store', type='string', dest='IGNORED')
+
+    parser.add_option('', '--app_key', action='store', type='string',
+                      dest='app_key')
+    parser.add_option('', '--app_secret', action='store', type='string',
+                      dest='app_secret')
+    parser.add_option('', '--oauth_token', action='store', type='string',
+                      dest='oauth_token')
+    parser.add_option('', '--oauth_token_secret', action='store',
+                      type='string',
+                      dest='oauth_token_secret')
+
     (opts, args) = parser.parse_args(args)
+
     return vars(opts)
 
+# pycharm
 
 def main():
     # Read args passed by splunkd. They look like:
     #   --<arg-name>=<arg-value>
     args = []
+
     while True:
         line = sys.stdin.readline().strip()
         if len(line) == 0:
             break
         args.append(line)
-    
+
     kwargs = parse_arguments(args)
-    username = kwargs.get('username', None)
-    password = kwargs.get('password', None)
-    if username is None or password is None:
-        raise Exception('Username or password argument not specified.')
-    
-    # Verify the password by connecting to the streaming API.
-    # We'll get an HTTP 200 response if the username and password are valid.
-    connection = AuthenticatedHttpConnection(
-        username=username,
-        password=password,
-        host='stream.twitter.com',
-        path='/1/statuses/sample.json?delimited=length',
-        use_https=True)
+
+    app_key = kwargs.get('app_key', None)
+    app_secret = kwargs.get('app_secret', None)
+    oauth_token = kwargs.get('oauth_token', None)
+    oauth_token_secret = kwargs.get('oauth_token_secret')
+
+    if app_key is None or app_secret is None or oauth_token is None or \
+                    oauth_token_secret is None:
+        raise Exception(
+            'App_key, app_secret, oauth_token, or oauth_token_secret '
+            'arguments not specified.')
+
+    twitter = Twython(
+        app_key=app_key,
+        app_secret=app_secret,
+        oauth_token=oauth_token,
+        oauth_token_secret=oauth_token_secret)
+
+    twitter.verify_credentials()
+
     try:
-        response = connection.connect(check_response=False)
-        
-        if response.status != 200:
-           sys.stdout.write("--status=fail - %s\n" % response.status)
-        else:
-           sys.stdout.write("--status=success\n")
-    finally:
-        connection.close()
+        twitter.verify_credentials()
+        sys.stdout.write("--status=success\n")
+
+    except TwythonError as e:
+        sys.stdout.write("--status=fail - %s\n" % e.message)
+
 
 if __name__ == '__main__':
     main()

@@ -1,9 +1,9 @@
-# Splunk-Twitter Connector
+# Splunk-Twitter Connector v2.3
 
 This app provides a scripted input for [Splunk](http://www.splunk.com/) that
 automatically extracts tweets from [Twitter](https://twitter.com/)'s [1% sample
-stream](https://dev.twitter.com/docs/api/1/get/statuses/sample). It is tested on
-Splunk 4.3.2.
+stream](https://dev.twitter.com/docs/api/1.1/get/statuses/sample). It is tested on
+Splunk 5.0.4.
 
 A number of dashboards and searches are also included to demonstrate how Splunk
 can be used to visualize Twitter activity.
@@ -15,12 +15,19 @@ can be used to visualize Twitter activity.
 
 * (Re)start Splunk so that the app is recognized.
 
-* In the Splunk web interface, from the App menu, select the Twitter app. And
-  press "Continue to app setup page".
+* In the Splunk web interface, from the App menu, select the Splunk-Twitter
+  Connector app and press "Continue to app setup page".
 
-* Enter your Twitter credentials and click "Save". (If you don't already have a
-  Twitter account, you can sign up for one at
-  [https://twitter.com/](https://twitter.com/).)
+* Enter the OAuth settings for a Twitter application that will be used to access
+  tweets from the sample stream and click "Save".
+
+  If you don't already have a Twitter account, you can sign up for one at
+  [https://twitter.com/](https://twitter.com/). If you need to create a Twitter
+  application for accessing tweets, you can create one at
+  [https://dev.twitter.com/apps](https://dev.twitter.com/apps). It need only be
+  enabled for read access to Twitter data. See
+  [https://dev.twitter.com/docs/application-permission-model](https://dev.twitter.com/docs/application-permission-model)
+  for details on the Twitter application permission model
 
 * Wait 15 seconds or so for some tweets to be extracted.
 
