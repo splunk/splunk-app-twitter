@@ -4,7 +4,7 @@
 To start indexing Twitter's sample stream please:<br/><br/>
 <strong>
 1. Provide OAuth settings for the Twitter application you will use for streaming.<br/>
-2. Enable Twitter scripted input.<br/>
+2. Enable the Twitter scripted input.<br/>
 </strong>
 <br/>
 The Twitter application you use for streaming requires read-only access. You can
@@ -17,7 +17,7 @@ app.
         ]]></text>
     </block>
 
-    <block title="Twitter application OAuth settings" endpoint="configs/conf-twitter-application" entity="OAuth settings">
+    <block title="Twitter application OAuth settings" endpoint="configs/conf-twitter-application" entity="oauth">
         <input field="app_key">
             <label>Consumer key</label>
             <type>text</type>

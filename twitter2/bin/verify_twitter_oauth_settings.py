@@ -8,10 +8,10 @@
 #
 #     http://www.apache.org/licenses/LICENSE-2.0
 #
-# Unless required by applicable law or agreed to in writing, sofaare 
-# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-# License for the specific language governing permissions and limitations 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
 # under the License.
 
 """
@@ -68,7 +68,7 @@ def main():
     if app_key is None or app_secret is None or oauth_token is None or \
                     oauth_token_secret is None:
         raise Exception(
-            'App_key, app_secret, oauth_token, or oauth_token_secret '
+            'App_key, app_secret, oauth_token, or oauth_token_secret ' +
             'arguments not specified.')
 
     twitter = Twython(
@@ -81,10 +81,10 @@ def main():
 
     try:
         twitter.verify_credentials()
-        sys.stdout.write("--status=success\n")
+        sys.stdout.write('--status=success\n')
 
     except TwythonError as e:
-        sys.stdout.write("--status=fail - %s\n" % e.message)
+        sys.stdout.write('--status=fail - %s\n' % e.message)
 
 
 if __name__ == '__main__':

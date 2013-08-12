@@ -1,4 +1,4 @@
-# Splunk-Twitter Connector v2.3
+# Splunk-Twitter Connector
 
 This app provides a scripted input for [Splunk](http://www.splunk.com/) that
 automatically extracts tweets from [Twitter](https://twitter.com/)'s [1% sample

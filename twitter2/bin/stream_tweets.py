@@ -41,91 +41,76 @@ class TweetStreamer(TwythonStreamer):
     Collects and writes a stream of tweets from Twitter
     """
 
-    # TODO, Consider providing additional event handlers as specified in
-    # twython/streaming/api.py
-
-    def __init__(
-        self, app_key, app_secret, oauth_token, oauth_token_secret,
-        timeout=300, retry_count=None, retry_in=10, headers=None,
-        output_stream=None
-    ):
+    def __init__(self, app_key, app_secret, oauth_token, oauth_token_secret,
+                 timeout=300, retry_count=None, retry_in=10, headers=None,
+                 output_stream=None):
         super(TweetStreamer, self).__init__(
             app_key, app_secret, oauth_token, oauth_token_secret, timeout,
-            retry_count, retry_in, headers
-        )
+            retry_count, retry_in, headers)
         self._output_stream = \
             sys.stdout if output_stream is None else output_stream
 
     def on_error(self, status_code, data):
         sys.stderr.write(
-            "Twitter reported status code {0}: {1}\n".format(status_code, data)
-        )
+            'Twitter reported status code %d: %s' % (status_code, data))
         sys.stderr.flush()
 
     def on_limit(self, limit):
         sys.stderr.write(
-            "More Tweets matched than the Twitter rate limit allows."
-            " {0} undelivered Tweets since the connection was opened.".format(
-                limit['track']
-            )
-        )
+            'More Tweets matched than the Twitter rate limit allows. %d ' +
+            'undelivered Tweets since the connection was opened.\n' %
+            limit['track'])
 
     def on_success(self, data):
+        # Super calls our other handlers using rules we'd like not to duplicate
         super(TweetStreamer, self).on_success(data)
 
         if 'created_at' in data:
+            # Generate a synthetic field with the desired timestamp so that
+            # Splunk can accurately parse it
             data['__time'] = data['created_at']
 
-        json.dump(
-            data, self._output_stream, ensure_ascii=False, separators=(',', ':')
-        )
+        # Preserve compact output format with separators
+        json.dump(data, self._output_stream, separators=(',', ':'))
 
-        self._output_stream.write("\r\n")
+        self._output_stream.write('\r\n')
 
 
 def get_oauth_settings(session_key):
     """
-    Retrieves OAuth settings from args, prompting the user for settings that
-    aren't
-    provided.
-    :param args:    Command line string
-    :return:        Dictionary of OAuth settings: 'app_key', 'app_secret',
-                    'oauth_token', and 'oauth_token_secret'
+    Retrieves OAuth settings from args.
+
+    :param session_key: A value identifying the current Splunk session.
+    :return: OAuth settings tuple: 'app_key', 'app_secret', 'oauth_token', and
+    'oauth_token_secret'
     """
 
     # NOTE: Requires 'develop' version of splunklib past 0.8.0 for 'token'
     # parameter to be honored
-
     service = splunklib.client.Service(
         host=splunk.getDefault('host'),
         port=splunk.getDefault('port'),
         scheme=splunk.getDefault('protocol'),
         owner='nobody',
         app='twitter2',
-        token='Splunk %s' % session_key
-    )
+        token='Splunk %s' % session_key)
 
     try:
         conf = service.confs['twitter-application']
-
     except KeyError:
         sys.stderr.write(
-            "Configuration file local/twitter-application.conf is missing."
-            " Please recreate this file or reinstall the Splunk-Twitter"
-            " Connector app."
+            'Configuration file local/twitter-application.conf is missing. ' +
+            'Please recreate this file or reinstall the Splunk-Twitter ' +
+            'Connector app.\n'
         )
         exit(1)
-
     try:
-        stanza = conf['OAuth settings']
-
+        stanza = conf['oauth']
     except KeyError:
         sys.stderr.write(
-            "Configuration file local/twitter-application.conf does not contain"
-            " an OAuth settings stanza. Please recreate this stanza or "
-            "reinstall"
-            " the Splunk-Twitter Connector app."
-        )
+            'Configuration file local/twitter-application.conf does not ' +
+            'contain an [oauth] stanza. Please recreate this stanza ' +
+            'or reinstall the Splunk-Twitter Connector app.\n')
         exit(1)
 
     app_key = stanza.content['app_key']
@@ -133,14 +118,13 @@ def get_oauth_settings(session_key):
     oauth_token = stanza.content['oauth_token']
     oauth_token_secret = stanza.content['oauth_token_secret']
 
-    if app_key is None or app_secret is None or oauth_token is None or \
-            oauth_token_secret is None:
+    if None in (app_key, app_secret, oauth_token, oauth_token_secret):
         sys.stderr.write(
-            'Could not get Twitter OAuth settings from Splunk. Complete '
+            'Could not get Twitter OAuth settings from Splunk. Complete ' +
             'application setup to correct this issue.\n')
         exit(1)
 
-    return (app_key, app_secret, oauth_token, oauth_token_secret)
+    return app_key, app_secret, oauth_token, oauth_token_secret
 
 
 def read_sample_tweet_stream(
@@ -181,9 +165,8 @@ def read_sample_tweet_stream(
     streamer.statuses.sample()
 
 
-def start(
-    app_key, app_secret, oauth_token, oauth_token_secret, output_stream=None
-):
+def start(app_key, app_secret, oauth_token, oauth_token_secret,
+          output_stream=None):
     """
     Continuously reads tweets from the sample Twitter stream and writes them to
     the specified output stream or `sys.stdout`, if no stream is provided.
@@ -208,12 +191,9 @@ def start(
 
     try:
         read_sample_tweet_stream(
-            app_key, app_secret, oauth_token, oauth_token_secret, output_stream
-        )
-
+            app_key, app_secret, oauth_token, oauth_token_secret, output_stream)
     except KeyboardInterrupt:
         pass
-
     except Exception:
         traceback.print_exc(file=sys.stderr)
         sys.stderr.flush()
@@ -225,19 +205,18 @@ def main():
 
     if len(session_key) == 0:
         sys.stderr.write(
-            'Did not receive a session key from splunkd. Please enable '
+            'Did not receive a session key from splunkd. Please enable ' +
             'passAuth in inputs.conf for this script.\n')
         exit(2)
 
-    app_key, app_secret, oauth_token, oauth_token_secret = get_oauth_settings(
-        session_key)
+    app_key, app_secret, oauth_token, oauth_token_secret = \
+        get_oauth_settings(session_key)
 
     start(
         app_key=app_key,
         app_secret=app_secret,
         oauth_token=oauth_token,
-        oauth_token_secret=oauth_token_secret
-    )
+        oauth_token_secret=oauth_token_secret)
 
 
 if __name__ == '__main__':
