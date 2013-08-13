@@ -65,8 +65,7 @@ def main():
     oauth_token = kwargs.get('oauth_token', None)
     oauth_token_secret = kwargs.get('oauth_token_secret')
 
-    if app_key is None or app_secret is None or oauth_token is None or \
-                    oauth_token_secret is None:
+    if None in (app_key, app_secret, oauth_token, oauth_token_secret):
         raise Exception(
             'App_key, app_secret, oauth_token, or oauth_token_secret ' +
             'arguments not specified.')
