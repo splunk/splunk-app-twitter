@@ -95,33 +95,35 @@ def get_oauth_settings(session_key):
         app='twitter2',
         token='Splunk %s' % session_key)
 
-    try:
-        conf = service.confs['twitter-application']
-    except KeyError:
+    passwords = splunklib.client.Collection(service, 'admin/passwords')
+    oauth_settings = None
+
+    for password in passwords:
+        oauth_settings = password
+        break
+
+    if oauth_settings is None:
         sys.stderr.write(
-            'Configuration file local/twitter-application.conf is missing. ' +
-            'Please recreate this file or reinstall the Splunk-Twitter ' +
-            'Connector app.\n'
-        )
-        exit(1)
-    try:
-        stanza = conf['oauth']
-    except KeyError:
-        sys.stderr.write(
-            'Configuration file local/twitter-application.conf does not ' +
-            'contain an [oauth] stanza. Please recreate this stanza ' +
-            'or reinstall the Splunk-Twitter Connector app.\n')
+            'Could not retrieve Twitter OAuth settings from Splunk. Set up ' +
+            'the app to correct this issue.\n')
         exit(1)
 
-    app_key = stanza.content['app_key']
-    app_secret = stanza.content['app_secret']
-    oauth_token = stanza.content['oauth_token']
-    oauth_token_secret = stanza.content['oauth_token_secret']
+    app_key = oauth_settings.content['realm']
+    oauth_token = oauth_settings.content['username']
+    secrets = oauth_settings.content['clear_password']
 
-    if None in (app_key, app_secret, oauth_token, oauth_token_secret):
+    if None in (app_key, oauth_token, secrets):
         sys.stderr.write(
-            'Could not get Twitter OAuth settings from Splunk. Complete ' +
-            'application setup to correct this issue.\n')
+            'Splunk returned incomplete Twitter OAuth settings. Set up the ' +
+            'app to correct this issue.\n')
+        exit(1)
+
+    try:
+        (app_secret, oauth_token_secret) = secrets.split(':')
+    except ValueError as e:
+        sys.stderr.write(
+            'Could not parse the Twitter OAuth secrets returned by Splunk: '
+            '%s. Set up the app to correct this issue.\n' % e.message)
         exit(1)
 
     return app_key, app_secret, oauth_token, oauth_token_secret

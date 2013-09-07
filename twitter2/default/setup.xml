@@ -17,21 +17,24 @@ app.
         ]]></text>
     </block>
 
-    <block title="Twitter application OAuth settings" endpoint="configs/conf-twitter-application" entity="oauth">
-        <input field="app_key">
+    <block title="Add Twitter application OAuth settings" endpoint="storage/passwords" entity="_new">
+        <input field="realm">
             <label>Consumer key</label>
             <type>text</type>
         </input>
-        <input field="app_secret">
-            <label>Consumer secret</label>
-            <type>password</type>
-        </input>
-        <input field="oauth_token">
+        <input field="name">
             <label>Access token</label>
             <type>text</type>
         </input>
-        <input field="oauth_token_secret">
-            <label>Access token secret</label>
+        <input field="password">
+            <label>Consumer secret and access token secret, colon separated</label>
+            <type>password</type>
+        </input>
+    </block>
+
+    <block title="Edit Twitter application OAuth secrets" endpoint="admin/passwords" eai_strict="false" entity="*">
+        <input field="password">
+            <label>Consumer secret and access token secret, colon separated</label>
             <type>password</type>
         </input>
     </block>

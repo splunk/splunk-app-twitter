@@ -31,21 +31,17 @@ import sys
 def parse_arguments(args):
     parser = optparse.OptionParser()
 
-    parser.add_option('', '--app_key', action='store', type='string',
+    parser.add_option('', '--realm', action='store', type='string',
                       dest='app_key')
-    parser.add_option('', '--app_secret', action='store', type='string',
-                      dest='app_secret')
-    parser.add_option('', '--oauth_token', action='store', type='string',
+    parser.add_option('', '--username', action='store', type='string',
                       dest='oauth_token')
-    parser.add_option('', '--oauth_token_secret', action='store',
-                      type='string',
-                      dest='oauth_token_secret')
+    parser.add_option('', '--password', action='store', type='string',
+                      dest='secrets')
 
     (opts, args) = parser.parse_args(args)
 
     return vars(opts)
 
-# pycharm
 
 def main():
     # Read args passed by splunkd. They look like:
@@ -61,14 +57,19 @@ def main():
     kwargs = parse_arguments(args)
 
     app_key = kwargs.get('app_key', None)
-    app_secret = kwargs.get('app_secret', None)
     oauth_token = kwargs.get('oauth_token', None)
-    oauth_token_secret = kwargs.get('oauth_token_secret')
+    secrets = kwargs.get('secrets', None)
 
-    if None in (app_key, app_secret, oauth_token, oauth_token_secret):
+    if None in (app_key, oauth_token, secrets):
         raise Exception(
-            'App_key, app_secret, oauth_token, or oauth_token_secret ' +
-            'arguments not specified.')
+            'App_key, oauth_token, or app_secret:oauth_token_secret ' +
+            'arguments are missing.')
+
+    try:
+        (app_secret, oauth_token_secret) = secrets.split(":")
+    except ValueError:
+        sys.stdout.write('--status=fail\n')
+        return
 
     twitter = Twython(
         app_key=app_key,
@@ -76,15 +77,13 @@ def main():
         oauth_token=oauth_token,
         oauth_token_secret=oauth_token_secret)
 
-    twitter.verify_credentials()
-
     try:
         twitter.verify_credentials()
-        sys.stdout.write('--status=success\n')
+    except TwythonError:
+        sys.stdout.write('--status=fail\n')
+        return
 
-    except TwythonError as e:
-        sys.stdout.write('--status=fail - %s\n' % e.message)
-
+    sys.stdout.write('--status=success\n')
 
 if __name__ == '__main__':
     main()
