@@ -1,4 +1,5 @@
 <nav>
+    <a href="/dj/redirector/twitter2/setup">Setup</a>
     <view name="twitter_general" default='true' />
     <collection label="Dashboards">
         <view name="twitter_general" />

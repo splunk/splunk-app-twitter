@@ -1,69 +1,7 @@
 <setup>
-    <block title="Welcome to the Splunk-Twitter Connector app">
+    <block title="Setup">
         <text><![CDATA[
-To start indexing Twitter's sample stream please:<br/><br/>
-<strong>
-1. Provide OAuth settings for the Twitter application you will use for streaming.<br/>
-2. Enable the Twitter scripted input.<br/>
-</strong>
-<br/>
-The Twitter application you use for streaming requires read-only access. You can
-access your applications or create a new read-only application <a href="https://dev.twitter.com/apps">here</a>.
-You will need a Twitter account to create an application. You can create a new account
-<a href="https://twitter.com/account/new">here</a>.<br/><br>
-If you wish to run the Tweet Locations search, you will need to install the
-<a href="http://splunk-base.splunk.com/apps/22365/google-maps">Google Maps</a>
-app.
+Go to the setup screen <a href="/dj/en-us/redirector/twitter2/setup">here</a>.
         ]]></text>
     </block>
-
-    <block title="Add Twitter application OAuth settings" endpoint="storage/passwords" entity="_new">
-        <input field="realm">
-            <label>Consumer key</label>
-            <type>text</type>
-        </input>
-        <input field="name">
-            <label>Access token</label>
-            <type>text</type>
-        </input>
-        <input field="password">
-            <label>Consumer secret and access token secret, colon separated</label>
-            <type>password</type>
-        </input>
-    </block>
-
-    <block title="Edit Twitter application OAuth secrets" endpoint="admin/passwords" eai_strict="false" entity="*">
-        <input field="password">
-            <label>Consumer secret and access token secret, colon separated</label>
-            <type>password</type>
-        </input>
-    </block>
-
-    <!-- (OS X, Linux) -->
-    <block title="Enable Twitter scripted input" enabled="in-unix"
-           endpoint="data/inputs/script"
-           entity=".%252Fbin%252Fstream_tweets.py">
-        <input field="interval">
-            <label>Restart Interval (sec)</label>
-            <type>text</type>
-        </input>
-        <input field="enabled">
-            <label>Enable</label>
-            <type>bool</type>
-        </input>
-    </block>
-
-    <!-- (Windows) -->
-    <block title="Enable Twitter scripted input" enabled="in-windows"
-           endpoint="data/inputs/script" entity=".%5Cbin%5Cstream_tweets.py">
-        <input field="interval">
-            <label>Restart Interval (sec)</label>
-            <type>text</type>
-        </input>
-        <input field="enabled">
-            <label>Enable</label>
-            <type>bool</type>
-        </input>
-    </block>
-
 </setup>

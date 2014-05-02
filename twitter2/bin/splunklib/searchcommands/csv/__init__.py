@@ -12,8 +12,16 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-"""Python library for Splunk."""
+from __future__ import absolute_import
 
-__version_info__ = (1, 2, 3)
-__version__ = ".".join(map(str, __version_info__))
+from . import dialect
+from .dict_reader import DictReader
+from .dict_writer import DictWriter
 
+import csv
+
+# Sets the maximum allowable CSV field size.
+#
+# The default of the csv module is 128KB; upping to 10MB. See SPL-12117 for
+# the background on issues surrounding field sizes.
+csv.field_size_limit(10485760)

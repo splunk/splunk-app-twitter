@@ -12,8 +12,16 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-"""Python library for Splunk."""
+import csv
 
-__version_info__ = (1, 2, 3)
-__version__ = ".".join(map(str, __version_info__))
 
+class Dialect(csv.Dialect):
+    """ Describes the properties of Splunk CSV streams. """
+    delimiter = ','
+    quotechar = '"'
+    doublequote = True
+    skipinitialspace = False
+    lineterminator = '\r\n'
+    quoting = csv.QUOTE_MINIMAL
+
+csv.register_dialect('splunklib.searchcommands', Dialect)

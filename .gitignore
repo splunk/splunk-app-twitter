@@ -3,3 +3,7 @@
 
 # OS X
 .DS_Store
+
+# App local data
+local
+metadata

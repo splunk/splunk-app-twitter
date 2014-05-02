@@ -1,0 +1,52 @@
+{% extends "splunkdj:base_with_app_bar.html" %}
+
+{% load splunkmvc %}
+
+{% block title %}Twitter App for Splunk{% endblock title %}
+
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}splunkdj/setup.css" />
+{% endblock css %}
+
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="span12">
+                <h2>Twitter App for Splunk</h2>
+                <form class="splunkdj-setup-form" method="post" action="">
+                    <p>To start indexing Twitter's sample stream please:</p>
+                    <strong>
+                    <ol>
+                        <li>Create a new Twitter account
+                            <a href="https://twitter.com/account/new">here</a>
+                            if you don't already have one.</li>
+                        <li>Create a Twitter application on the
+                            <a href="https://dev.twitter.com/apps">
+                            Twitter developer website</a>
+                            if you don't already have one.
+                        <li>Provide the OAuth settings for the Twitter application
+                            you will use for streaming in the form below.</li>
+                        <li>Enable the Twitter input by checking the box below.</li>
+                    </ol>
+                    </strong>
+                    <p>
+                        If you wish to run the Tweet Locations search, you will
+                        need to install the
+                        <a href="http://splunk-base.splunk.com/apps/22365/google-maps">
+                        Google Maps</a> app.
+                    </p>
+                    
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <input class="btn btn-primary" type="submit" value="Save" />
+                    {% if configured %}
+                        <a class="btn" href="{% url 'twitter2:home' %}">Cancel</a>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock content%}
+
+{% block js %}
+{% endblock js %}
