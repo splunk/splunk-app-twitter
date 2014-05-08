@@ -1,4 +1,4 @@
-# Splunk-Twitter Connector
+# Twitter App for Splunk
 
 This app provides a scripted input for [Splunk](http://www.splunk.com/) that
 automatically extracts tweets from [Twitter](https://twitter.com/)'s [1% sample
@@ -15,8 +15,8 @@ can be used to visualize Twitter activity.
 
 * (Re)start Splunk so that the app is recognized.
 
-* In the Splunk web interface, from the App menu, select the Splunk-Twitter
-  Connector app and press "Continue to app setup page".
+* In the Splunk web interface, from the App menu, select the Twitter app
+  and press "Continue to app setup page".
 
 * Enter the OAuth settings for a Twitter application that will be used to access
   tweets from the sample stream and click "Save".
