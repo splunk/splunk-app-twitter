@@ -1,7 +1,9 @@
 <setup>
     <block title="Setup">
         <text><![CDATA[
-Go to the setup screen <a href="/dj/en-us/redirector/twitter2/setup">here</a>.
+Redirecting you to the setup screen...
+
+<script> window.location = '/dj/en-us/redirector/twitter2/setup'; </script>
         ]]></text>
     </block>
 </setup>
