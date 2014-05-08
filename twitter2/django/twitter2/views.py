@@ -13,7 +13,16 @@ def home(request):
 @render_to('twitter2:setup.html')
 @login_required
 def setup(request):
-    return create_setup_view_context(
+    result = create_setup_view_context(
         request,
         SetupForm,
         reverse('twitter2:home'))
+    
+    # HACK: Workaround DVPL-4647 (Splunk 6.1 and below):
+    #       Refresh current app's state so that non-framework views
+    #       observe when the app becomes configured.
+    service = request.service
+    app_name = service.namespace['app']
+    service.apps[app_name].post('_reload')
+    
+    return result
