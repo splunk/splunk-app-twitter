@@ -1,31 +1,38 @@
 import os.path
 from splunkdj.setup import forms
 import splunklib.client as client
+import subprocess
+import sys
 
-def implemented_elsewhere():
+_PYTHON_FILEPATH = sys.executable
+_VERIFY_SCRIPT_FILEPATH = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)),
+    '..', '..', 'bin', 'verify_twitter_oauth_settings.py')
+
+def _implemented_elsewhere():
     raise ValueError('Load/save of this field is handled by the form class.')
 
 class SetupForm(forms.Form):
     api_key = forms.CharField(
         label="API Key",
         max_length=100,
-        load=implemented_elsewhere, save=implemented_elsewhere)
+        load=_implemented_elsewhere, save=_implemented_elsewhere)
     api_secret = forms.CharField(
         label="API Secret",
         max_length=100,
-        load=implemented_elsewhere, save=implemented_elsewhere)
+        load=_implemented_elsewhere, save=_implemented_elsewhere)
     access_token = forms.CharField(
         label="Access Token",
         max_length=100,
-        load=implemented_elsewhere, save=implemented_elsewhere)
+        load=_implemented_elsewhere, save=_implemented_elsewhere)
     access_token_secret = forms.CharField(
         label="Access Token Secret",
         max_length=100,
-        load=implemented_elsewhere, save=implemented_elsewhere)
+        load=_implemented_elsewhere, save=_implemented_elsewhere)
     enabled = forms.BooleanField(
         label="Enable Twitter Input",
         required=False,     # needed for BooleanFields to permit value of False
-        load=implemented_elsewhere, save=implemented_elsewhere)
+        load=_implemented_elsewhere, save=_implemented_elsewhere)
     
     @classmethod
     def load(cls, request):
@@ -73,6 +80,28 @@ class SetupForm(forms.Form):
         # Create a SetupForm with the settings
         return cls(settings)
     
+    def clean(self):
+        """Perform validations that require multiple fields."""
+        
+        cleaned_data = super(SetupForm, self).clean()
+        
+        # Verify that the credentials are valid by connecting to Twitter
+        credentials = [
+            cleaned_data.get('api_key', None),
+            cleaned_data.get('api_secret', None),
+            cleaned_data.get('access_token', None),
+            cleaned_data.get('access_token_secret', None)
+        ]
+        if None in credentials:
+            # One of the credential fields didn't pass validation,
+            # so don't even try connecting to Twitter.
+            pass
+        else:
+            if not SetupForm._validate_twitter_credentials(credentials):
+                raise forms.ValidationError('Invalid Twitter credentials.')
+        
+        return cleaned_data
+    
     def save(self, request):
         """Saves this form's persisted state."""
         
@@ -114,3 +143,14 @@ class SetupForm(forms.Form):
             if input.name.endswith(os.path.join('twitter2', 'bin', 'stream_tweets.py')):
                 return input
         raise ValueError('Could not locate the Twitter scripted input.')
+    
+    @staticmethod
+    def _validate_twitter_credentials(credentials):
+        # HACK: Shell out to a new Python subprocess because the
+        #       verify script depends on a different version of the
+        #       'requests' library than the Splunk Web Framework uses.
+        #       (The subprocess will use its own version of 'requests'.)
+        return_code = subprocess.call(
+            [_PYTHON_FILEPATH, _VERIFY_SCRIPT_FILEPATH] +
+            credentials)
+        return (return_code == 0)

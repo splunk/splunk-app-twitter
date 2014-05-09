@@ -17,73 +17,31 @@
 """
 Verifies whether a set of Twitter credentials are valid.
 
-This script is invoked by Splunk whenever the user inputs new credentials
-on the Twitter app's setup page, which is defined by `setup.xml`. If the
-credentials are deemed invalid, an error message will be presented to the user
-at the time the credentials are entered.
+This script is invoked by `forms.py` whenever the user inputs new credentials
+on the Twitter app's setup page. If the credentials are deemed invalid,
+an error message will be presented to the user at the time the credentials
+are entered.
 """
 
 from twython import Twython, TwythonError
-import optparse
 import sys
 
-
-def parse_arguments(args):
-    parser = optparse.OptionParser()
-
-    parser.add_option('', '--realm', action='store', type='string',
-                      dest='app_key')
-    parser.add_option('', '--username', action='store', type='string',
-                      dest='oauth_token')
-    parser.add_option('', '--password', action='store', type='string',
-                      dest='secrets')
-
-    (opts, args) = parser.parse_args(args)
-
-    return vars(opts)
-
-
 def main():
-    # Read args passed by splunkd. They look like:
-    #   --<arg-name>=<arg-value>
-    args = []
-
-    while True:
-        line = sys.stdin.readline().strip()
-        if len(line) == 0:
-            break
-        args.append(line)
-
-    kwargs = parse_arguments(args)
-
-    app_key = kwargs.get('app_key', None)
-    oauth_token = kwargs.get('oauth_token', None)
-    secrets = kwargs.get('secrets', None)
-
-    if None in (app_key, oauth_token, secrets):
-        raise Exception(
-            'App_key, oauth_token, or app_secret:oauth_token_secret ' +
-            'arguments are missing.')
-
-    try:
-        (app_secret, oauth_token_secret) = secrets.split(":")
-    except ValueError:
-        sys.stdout.write('--status=fail\n')
-        return
-
+    (_, api_key, api_secret, access_token, access_token_secret) = sys.argv
+    
     twitter = Twython(
-        app_key=app_key,
-        app_secret=app_secret,
-        oauth_token=oauth_token,
-        oauth_token_secret=oauth_token_secret)
-
+        app_key=api_key,
+        app_secret=api_secret,
+        oauth_token=access_token,
+        oauth_token_secret=access_token_secret)
     try:
         twitter.verify_credentials()
     except TwythonError:
-        sys.stdout.write('--status=fail\n')
-        return
-
-    sys.stdout.write('--status=success\n')
+        # Invalid credentials
+        sys.exit(1)
+    
+    # Okay
+    sys.exit(0)
 
 if __name__ == '__main__':
     main()
