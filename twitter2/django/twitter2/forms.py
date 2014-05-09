@@ -1,5 +1,6 @@
+# NOTE: Using django.forms directly instead of splunkdj.setup.forms
+from django import forms
 import os.path
-from splunkdj.setup import forms
 import splunklib.client as client
 import subprocess
 import sys
@@ -9,30 +10,22 @@ _VERIFY_SCRIPT_FILEPATH = os.path.join(
     os.path.dirname(os.path.abspath(__file__)),
     '..', '..', 'bin', 'verify_twitter_oauth_settings.py')
 
-def _implemented_elsewhere():
-    raise ValueError('Load/save of this field is handled by the form class.')
-
 class SetupForm(forms.Form):
     api_key = forms.CharField(
         label="API Key",
-        max_length=100,
-        load=_implemented_elsewhere, save=_implemented_elsewhere)
+        max_length=100)
     api_secret = forms.CharField(
         label="API Secret",
-        max_length=100,
-        load=_implemented_elsewhere, save=_implemented_elsewhere)
+        max_length=100)
     access_token = forms.CharField(
         label="Access Token",
-        max_length=100,
-        load=_implemented_elsewhere, save=_implemented_elsewhere)
+        max_length=100)
     access_token_secret = forms.CharField(
         label="Access Token Secret",
-        max_length=100,
-        load=_implemented_elsewhere, save=_implemented_elsewhere)
+        max_length=100)
     enabled = forms.BooleanField(
         label="Enable Twitter Input",
-        required=False,     # needed for BooleanFields to permit value of False
-        load=_implemented_elsewhere, save=_implemented_elsewhere)
+        required=False)     # needed for BooleanFields to permit value of False
     
     @classmethod
     def load(cls, request):
