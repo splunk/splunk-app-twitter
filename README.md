@@ -51,10 +51,6 @@ user of interest.
 
 ### Searches & Reports > <u>Tweet Locations</u>
 
-_NOTE: This view requires the [Google
-Maps](http://splunk-base.splunk.com/apps/22365/google-maps) application from
-SplunkBase to be installed._
-
 Displays the locations of tweets on a map.
 
 ## License
