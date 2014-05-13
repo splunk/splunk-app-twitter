@@ -71,7 +71,12 @@ class TweetStreamer(TwythonStreamer):
             data['__time'] = data['created_at']
 
         # Preserve compact output format with separators
-        json.dump(data, self._output_stream, separators=(',', ':'))
+        json.dump(data, self._output_stream,
+            # Preserve compact output format
+            separators=(',', ':'),
+            # Workaround issue where searching for \u####-encoded characters
+            # doesn't work. (DVPL-2401)
+            ensure_ascii=False)
 
         self._output_stream.write('\r\n')
 
