@@ -5,7 +5,13 @@ import splunklib.client as client
 import subprocess
 import sys
 
+# Find Python
 _PYTHON_FILEPATH = sys.executable
+if os.path.basename(_PYTHON_FILEPATH) == 'splunkweb.exe':
+    # Splunk Python on Windows incorrectly reports "splunkweb.exe". Fix it.
+    _PYTHON_FILEPATH = os.path.join(
+        os.path.dirname(_PYTHON_FILEPATH), 'python.exe')
+
 _VERIFY_SCRIPT_FILEPATH = os.path.join(
     os.path.dirname(os.path.abspath(__file__)),
     '..', '..', 'bin', 'verify_twitter_oauth_settings.py')

@@ -26,8 +26,8 @@ are entered.
 from twython import Twython, TwythonError
 import sys
 
-def main():
-    (_, api_key, api_secret, access_token, access_token_secret) = sys.argv
+def main(args):
+    (_, api_key, api_secret, access_token, access_token_secret) = args
     
     twitter = Twython(
         app_key=api_key,
@@ -38,10 +38,10 @@ def main():
         twitter.verify_credentials()
     except TwythonError:
         # Invalid credentials
-        sys.exit(1)
+        return 1
     
     # Okay
-    sys.exit(0)
+    return 0
 
 if __name__ == '__main__':
-    main()
+    sys.exit(main(sys.argv))
