@@ -7,3 +7,7 @@
 # App local data
 local
 metadata
+
+# Packaged versions of the app
+twitter2.tgz
+twitter2.spl
