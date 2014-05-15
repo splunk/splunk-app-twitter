@@ -29,6 +29,10 @@
                         <li>Enable the Twitter input by checking the box below.</li>
                     </ol>
                     </strong>
+                    <p>
+                        If you wish to run the Tweet Locations search, you will
+                        need to be running Splunk 6.1 or later.
+                    </p>
                     
                     {% csrf_token %}
                     {{ form.as_p }}
