@@ -2,8 +2,8 @@
 
 This app provides a scripted input for [Splunk](http://www.splunk.com/) that
 automatically extracts tweets from [Twitter](https://twitter.com/)'s [1% sample
-stream](https://dev.twitter.com/docs/api/1.1/get/statuses/sample). It is tested on
-Splunk 5.0.4.
+stream](https://dev.twitter.com/docs/api/1.1/get/statuses/sample).
+It is tested on Splunk 6.0 and 6.1. Splunk 5.0 and earlier is unsupported.
 
 A number of dashboards and searches are also included to demonstrate how Splunk
 can be used to visualize Twitter activity.
@@ -50,6 +50,8 @@ This view could be used as a social dashboard for tracking activity related to a
 user of interest.
 
 ### Searches & Reports > <u>Tweet Locations</u>
+
+_NOTE: This view requires Splunk 6.1 or later._
 
 Displays the locations of tweets on a map.
 
